@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "945602634040",
+    "project_id": "jewelmarket-85de2",
+    "storage_bucket": "jewelmarket-85de2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945602634040:android:09ed87be10a0c394c761cd",
+        "android_client_info": {
+          "package_name": "com.asoosoft.jewelmarket"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "945602634040-d3s5uuv5cfha6p11eub1mtt97j2k86a6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.asoosoft.jewelmarket",
+            "certificate_hash": "bd27b4ad88544b46367673a7faa5efe2a29c7077"
+          }
+        },
+        {
+          "client_id": "945602634040-239dltmeei100m31r6mpm9798cb1prkf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1UHlnvH_QQGWzU0hVstFiu3luCtGLcwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "945602634040-239dltmeei100m31r6mpm9798cb1prkf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "945602634040-255vsu6d2mm83r35t5i2np68mpnk0n3l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.asoosoft.jewelmarket"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945602634040:android:989d5e4da2653524c761cd",
+        "android_client_info": {
+          "package_name": "com.example.flutter_jewel_market"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "945602634040-239dltmeei100m31r6mpm9798cb1prkf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1UHlnvH_QQGWzU0hVstFiu3luCtGLcwU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "945602634040-239dltmeei100m31r6mpm9798cb1prkf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "945602634040-255vsu6d2mm83r35t5i2np68mpnk0n3l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.asoosoft.jewelmarket"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

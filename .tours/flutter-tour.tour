@@ -1,0 +1,22 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "flutter tour",
+  "steps": [
+    {
+      "file": "lib/external_web_view.dart",
+      "description": "테스트~~~~\r\n``` dart\r\nfinal String uri = \"http://192.168.0.69:7443\"\r\n```",
+      "line": 17,
+      "icon": "😊",
+      "selection": {
+        "start": {
+          "line": 17,
+          "character": 3
+        },
+        "end": {
+          "line": 17,
+          "character": 48
+        }
+      }
+    }
+  ]
+}

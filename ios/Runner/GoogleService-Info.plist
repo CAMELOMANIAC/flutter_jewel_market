@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>945602634040-255vsu6d2mm83r35t5i2np68mpnk0n3l.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.945602634040-255vsu6d2mm83r35t5i2np68mpnk0n3l</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>945602634040-d3s5uuv5cfha6p11eub1mtt97j2k86a6.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDXC9I-dOI21lvmosNS7JLvqcqA7BoaWAM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>945602634040</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.asoosoft.jewelmarket</string>
+	<key>PROJECT_ID</key>
+	<string>jewelmarket-85de2</string>
+	<key>STORAGE_BUCKET</key>
+	<string>jewelmarket-85de2.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:945602634040:ios:cfe9a1d013b91441c761cd</string>
+</dict>
+</plist>
