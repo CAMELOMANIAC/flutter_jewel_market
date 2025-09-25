@@ -26,10 +26,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -59,4 +56,16 @@ class DefaultFirebaseOptions {
     projectId: 'jewelmarket-85de2',
     storageBucket: 'jewelmarket-85de2.firebasestorage.app',
   );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDXC9I-dOI21lvmosNS7JLvqcqA7BoaWAM',
+    appId: '1:945602634040:ios:613628f7f7640c58c761cd',
+    messagingSenderId: '945602634040',
+    projectId: 'jewelmarket-85de2',
+    storageBucket: 'jewelmarket-85de2.firebasestorage.app',
+    androidClientId: '945602634040-d3s5uuv5cfha6p11eub1mtt97j2k86a6.apps.googleusercontent.com',
+    iosClientId: '945602634040-p92gncnd28j8v7apgdp50ce3rmf3jvq8.apps.googleusercontent.com',
+    iosBundleId: 'com.example.flutterJewelMarket',
+  );
+
 }
