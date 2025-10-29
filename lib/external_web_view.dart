@@ -14,7 +14,7 @@ class ExternalWebView extends StatefulWidget {
 
 class ExternalWebViewState extends State<ExternalWebView>
     with WidgetsBindingObserver {
-  final String uri = "http://192.168.0.69:7443";
+  final String uri = "https://dev.jewelmarket.kr:7443";
   InAppWebViewController? webViewController;
 
   void handleFCMMessage(RemoteMessage message) {
@@ -23,10 +23,13 @@ class ExternalWebViewState extends State<ExternalWebView>
     webViewController?.evaluateJavascript(
       source:
           '''
-      console.log("push");
-      const pushData = JSON.parse('$jsonData');
-      window.dispatchEvent(new CustomEvent("push", { detail: { pushType:pushType, pushData: pushData } }));
-    ''',
+          (() => {
+            console.log("push");
+            const pushData = JSON.parse('$jsonData').pushData;
+            const pushType = JSON.parse('$jsonData').pushType;
+            window.dispatchEvent(new CustomEvent("push", { detail: { pushType:pushType, pushData: pushData } }));
+          })()
+        ''',
     );
   }
 
@@ -55,15 +58,15 @@ class ExternalWebViewState extends State<ExternalWebView>
       webViewController?.evaluateJavascript(
         source: '''
           console.log("pause")
-        window.dispatchEvent(new Event("pause"));
-      ''',
+          window.dispatchEvent(new Event("pause"));
+        ''',
       );
     } else if (state == AppLifecycleState.resumed) {
       webViewController?.evaluateJavascript(
         source: '''
           console.log("resume")
-        window.dispatchEvent(new Event("resume"));
-      ''',
+          window.dispatchEvent(new Event("resume"));
+        ''',
       );
     }
   }
@@ -92,7 +95,7 @@ class ExternalWebViewState extends State<ExternalWebView>
       webViewController?.evaluateJavascript(
         source: '''
           console.log("backbutton",theApp.mainNavi.curHisIndex)
-          document.dispatchEvent(new Event("backbutton"));
+          window.dispatchEvent(new Event("backbutton"));
         ''',
       );
     } else {
@@ -114,6 +117,15 @@ class ExternalWebViewState extends State<ExternalWebView>
       handlerName: 'closeAppHandler',
       callback: (args) {
         SystemNavigator.pop();
+      },
+    );
+  }
+
+  void fcmTokenEventHandler() {
+    webViewController?.addJavaScriptHandler(
+      handlerName: 'getFcmTokenHandler',
+      callback: (args) {
+        return FirebaseMessaging.instance.getToken();
       },
     );
   }
@@ -147,6 +159,7 @@ class ExternalWebViewState extends State<ExternalWebView>
         onWebViewCreated: (controller) {
           webViewController = controller;
           flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
+          fcmTokenEventHandler();
         },
         onPermissionRequest: _requestPermissionHandler,
       ),
