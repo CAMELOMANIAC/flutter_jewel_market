@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/services.dart';
@@ -18,20 +19,26 @@ class ExternalWebViewState extends State<ExternalWebView>
   InAppWebViewController? webViewController;
 
   void handleFCMMessage(RemoteMessage message) {
-    final data = message.data;
-    final jsonData = jsonEncode(data);
-    webViewController?.evaluateJavascript(
-      source:
-          '''
-          (() => {
-            console.log("push");
-            const pushData = JSON.parse('$jsonData').pushData;
-            const pushType = JSON.parse('$jsonData').pushType;
-            window.dispatchEvent(new CustomEvent("push", { detail: { pushType:pushType, pushData: pushData } }));
-          })()
-        ''',
+  final data = message.data;
+
+  if (webViewController != null) {
+    webViewController!.callAsyncJavaScript(//웹킷기반에서 evaulateJavascript가 크롬과 다르게 동작해서 문제가 발생할수있으므로 callAsyncJavaScript로 수정
+      functionBody: '''
+        (data) => {
+          console.log("push");
+          const pushData = data.pushData;
+          const pushType = data.pushType;
+          console.log(pushData);
+          console.log(pushType);
+          window.dispatchEvent(new CustomEvent("push", { detail: { pushType: pushType, pushData: pushData } }));
+        }
+      ''',
+      arguments: {
+        'data': data,
+      },
     );
   }
+}
 
   @override
   void initState() {
@@ -162,6 +169,7 @@ class ExternalWebViewState extends State<ExternalWebView>
           fcmTokenEventHandler();
         },
         onPermissionRequest: _requestPermissionHandler,
+        initialSettings: InAppWebViewSettings(isInspectable: kDebugMode ? true : false,)//ios용 웹인스펙터 디버깅 설정 추가
       ),
     );
   }
