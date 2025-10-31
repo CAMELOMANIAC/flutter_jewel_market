@@ -19,26 +19,43 @@ class ExternalWebViewState extends State<ExternalWebView>
   InAppWebViewController? webViewController;
 
   void handleFCMMessage(RemoteMessage message) {
-  final data = message.data;
+    final data = message.data;
 
-  if (webViewController != null) {
-    webViewController!.callAsyncJavaScript(//웹킷기반에서 evaulateJavascript가 크롬과 다르게 동작해서 문제가 발생할수있으므로 callAsyncJavaScript로 수정
-      functionBody: '''
-        (data) => {
-          console.log("push");
-          const pushData = data.pushData;
-          const pushType = data.pushType;
-          console.log(pushData);
-          console.log(pushType);
-          window.dispatchEvent(new CustomEvent("push", { detail: { pushType: pushType, pushData: pushData } }));
-        }
-      ''',
-      arguments: {
-        'data': data,
+    // 각 필드 추출
+    final pushType = data['pushType'];
+    final body = data['body'];
+    final title = data['title'];
+
+    // pushData는 문자열 또는 Map일 수 있으므로 안전하게 파싱
+    Map<String, dynamic>? pushDataMap;
+    final rawPushData = data['pushData'];
+
+    if (rawPushData is String) {
+      try {
+        pushDataMap = jsonDecode(rawPushData);
+      } catch (e) {
+        debugPrint("pushData JSON decode error: $e");
+      }
+    } else if (rawPushData is Map) {
+      pushDataMap = Map<String, dynamic>.from(rawPushData);
+    }
+
+    // WebMessage로 보낼 전체 payload 구성
+    final messagePayload = {
+      "event": "push", // JS에서 이벤트 구분용
+      "payload": {
+        "pushType": pushType,
+        "title": title,
+        "body": body,
+        "pushData": pushDataMap,
       },
+    };
+
+    webViewController!.postWebMessage(
+      message: WebMessage(data: jsonEncode(messagePayload)),
     );
+    debugPrint("FCM Message: $messagePayload");
   }
-}
 
   @override
   void initState() {
@@ -169,7 +186,9 @@ class ExternalWebViewState extends State<ExternalWebView>
           fcmTokenEventHandler();
         },
         onPermissionRequest: _requestPermissionHandler,
-        initialSettings: InAppWebViewSettings(isInspectable: kDebugMode ? true : false,)//ios용 웹인스펙터 디버깅 설정 추가
+        initialSettings: InAppWebViewSettings(
+          isInspectable: kDebugMode ? true : false,
+        ), //ios용 웹인스펙터 디버깅 설정 추가
       ),
     );
   }
