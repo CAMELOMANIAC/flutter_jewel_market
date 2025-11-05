@@ -7,7 +7,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/services.dart';
 
 class ExternalWebView extends StatefulWidget {
-  const ExternalWebView({super.key});
+  final RemoteMessage? initialFCMMessage;
+  const ExternalWebView({super.key, this.initialFCMMessage});
 
   @override
   State<ExternalWebView> createState() => ExternalWebViewState();
@@ -17,9 +18,22 @@ class ExternalWebViewState extends State<ExternalWebView>
     with WidgetsBindingObserver {
   final String uri = "https://dev.jewelmarket.kr:7443";
   InAppWebViewController? webViewController;
+  RemoteMessage? _pendingFCMMessage;
+  bool isWebReady = false;
+  String activatedTalkKey = "";
 
   void handleFCMMessage(RemoteMessage message) {
-    final data = message.data;
+    _pendingFCMMessage = message;
+    debugPrint('handleFCMMessage에서 ${_pendingFCMMessage?.data}');
+    // 웹뷰가 이미 로드 완료 상태인지 확인하고 바로 전달 시도
+    if (webViewController != null) {
+      _sendPendingMessage();
+    }
+  }
+
+  void _sendPendingMessage() {
+    final data = _pendingFCMMessage?.data;
+    if (data == null || webViewController == null) return;
 
     // 각 필드 추출
     final pushType = data['pushType'];
@@ -51,16 +65,24 @@ class ExternalWebViewState extends State<ExternalWebView>
       },
     };
 
-    webViewController!.postWebMessage(
-      message: WebMessage(data: jsonEncode(messagePayload)),
-    );
-    debugPrint("FCM Message: $messagePayload");
+    if (isWebReady) {
+      webViewController!.postWebMessage(
+        message: WebMessage(data: jsonEncode(messagePayload)),
+      );
+      debugPrint("FCM Message 전송 선공: $messagePayload");
+      _pendingFCMMessage = null;
+    } else {
+      debugPrint("FCM Message 전송 실패: $isWebReady");
+    }
   }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    if (widget.initialFCMMessage != null) {
+      handleFCMMessage(widget.initialFCMMessage!);
+    }
   }
 
   @override
@@ -124,8 +146,7 @@ class ExternalWebViewState extends State<ExternalWebView>
       );
     } else {
       final bool canGoBack = await webViewController!.canGoBack();
-      // 4. 외부 도메인인 경우
-      // 외부 페이지에서는 네이티브 뒤로가기 기능을 직접 사용합니다.
+      // 4. 외부 도메인인 경우(외부 페이지에서는 네이티브 뒤로가기 기능을 직접 사용합니다.)
       if (canGoBack) {
         webViewController!.goBack();
       } else {
@@ -133,6 +154,17 @@ class ExternalWebViewState extends State<ExternalWebView>
         SystemNavigator.pop();
       }
     }
+  }
+
+  void webReadyHandShakeHandler() {
+    webViewController?.addJavaScriptHandler(
+        handlerName: "webReady",
+        callback: (args){
+          isWebReady = true;
+          debugPrint("플러터: 웹뷰 준비 완료");
+            _sendPendingMessage(); // 대기 중인 메시지 전송
+      }
+    );
   }
 
   //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
@@ -145,11 +177,22 @@ class ExternalWebViewState extends State<ExternalWebView>
     );
   }
 
+  //기기 fcm 토큰을 가져오는 함수
   void fcmTokenEventHandler() {
     webViewController?.addJavaScriptHandler(
       handlerName: 'getFcmTokenHandler',
       callback: (args) {
         return FirebaseMessaging.instance.getToken();
+      },
+    );
+  }
+
+  void activatedTalkKeyHandler() {
+    webViewController?.addJavaScriptHandler(
+      handlerName: 'setActivatedTalkKeyHandler',
+      callback: (args) {
+        activatedTalkKey = args[0];
+        debugPrint("setActivatedTalkKeyHandler $activatedTalkKey");
       },
     );
   }
@@ -182,8 +225,12 @@ class ExternalWebViewState extends State<ExternalWebView>
         initialUrlRequest: URLRequest(url: WebUri(uri)),
         onWebViewCreated: (controller) {
           webViewController = controller;
-          flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
           fcmTokenEventHandler();
+          webReadyHandShakeHandler();
+        },
+        onLoadStop: (controller, url) {//웹뷰가 완전히 로드된 후 실행할 이벤트
+          flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
+          activatedTalkKeyHandler();
         },
         onPermissionRequest: _requestPermissionHandler,
         initialSettings: InAppWebViewSettings(
