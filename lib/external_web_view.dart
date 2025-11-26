@@ -232,10 +232,10 @@ class ExternalWebViewState extends State<ExternalWebView>
             onWebViewCreated: (controller) {
               webViewController = controller;
               fcmTokenEventHandler();
+              webReadyHandShakeHandler();
             },
             onLoadStop: (controller, url) {
               //웹뷰가 완전히 로드된 후 실행할 이벤트
-              webReadyHandShakeHandler();
               flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
               activatedTalkKeyHandler();
             },
