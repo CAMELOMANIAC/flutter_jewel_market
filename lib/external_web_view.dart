@@ -158,12 +158,14 @@ class ExternalWebViewState extends State<ExternalWebView>
 
   void webReadyHandShakeHandler() {
     webViewController?.addJavaScriptHandler(
-        handlerName: "webReady",
-        callback: (args){
+      handlerName: "webReady",
+      callback: (args) {
+        setState(() {
           isWebReady = true;
-          debugPrint("플러터: 웹뷰 준비 완료");
-            _sendPendingMessage(); // 대기 중인 메시지 전송
-      }
+        });
+        debugPrint("플러터: 웹뷰 준비 완료");
+        _sendPendingMessage(); // 대기 중인 메시지 전송
+      },
     );
   }
 
@@ -217,26 +219,38 @@ class ExternalWebViewState extends State<ExternalWebView>
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false, //기본 history.back()을 하지 못하도록 합니다.
-      onPopInvokedWithResult: //원래 플러터는 코르도바와 달리 자동으로 history.back()을 호출하지만
-          _onPopInvokedWithResult, //기존 코드 호환을 위해 backbutton 이벤트를 트리거하도록 정의
-      child: InAppWebView(
-        initialUrlRequest: URLRequest(url: WebUri(uri)),
-        onWebViewCreated: (controller) {
-          webViewController = controller;
-          fcmTokenEventHandler();
-          webReadyHandShakeHandler();
-        },
-        onLoadStop: (controller, url) {//웹뷰가 완전히 로드된 후 실행할 이벤트
-          flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
-          activatedTalkKeyHandler();
-        },
-        onPermissionRequest: _requestPermissionHandler,
-        initialSettings: InAppWebViewSettings(
-          isInspectable: kDebugMode ? true : false,
-        ), //ios용 웹인스펙터 디버깅 설정 추가
-      ),
+    return Stack(
+      children: [
+        PopScope(
+          canPop: false, //기본 history.back()을 하지 못하도록 합니다.
+          onPopInvokedWithResult: //원래 플러터는 코르도바와 달리 자동으로 history.back()을 호출하지만
+              _onPopInvokedWithResult, //기존 코드 호환을 위해 backbutton 이벤트를 트리거하도록 정의
+          child: InAppWebView(
+            initialUrlRequest: URLRequest(url: WebUri(uri)),
+            onWebViewCreated: (controller) {
+              webViewController = controller;
+              fcmTokenEventHandler();
+              webReadyHandShakeHandler();
+            },
+            onLoadStop: (controller, url) {
+              //웹뷰가 완전히 로드된 후 실행할 이벤트
+              flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
+              activatedTalkKeyHandler();
+            },
+            onPermissionRequest: _requestPermissionHandler,
+            initialSettings: InAppWebViewSettings(
+              isInspectable: kDebugMode ? true : false,
+            ), //ios용 웹인스펙터 디버깅 설정 추가
+          ),
+        ),
+        isWebReady ==
+                false // 웹뷰가 준비되지 않을때 보여 줄 폴백 출력
+            ? Container(
+                color: Colors.white,
+                child: Center(child: CircularProgressIndicator()),
+              )
+            : const SizedBox.shrink(),
+      ],
     );
   }
 }

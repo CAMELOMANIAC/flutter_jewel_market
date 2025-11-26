@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">jewelmarket</string>
+    <string name="launcher_name">@string/app_name</string>
+    <string name="activity_name">@string/launcher_name</string>
+    <!--string name="default_web_client_id">575125385842-u6jq8futgn8smgutiov4vq8n3cnmi1c7.apps.googleusercontent.com</string-->
+    <string name="default_web_client_id">575125385842-fmul3f7879u2huivg54fvli9ogckcr83.apps.googleusercontent.com</string>
+
+</resources>

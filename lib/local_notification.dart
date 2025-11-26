@@ -7,13 +7,14 @@ import 'package:flutter_jewel_market/main.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 Future<void> initializeNotifications() async {
-
   // 초기화 설정 (InitializationSettings)
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings(
+        'notification_icon',
+      ); //android\app\src\main\res\drawable\intro_icon.xml 위치한 이미지
   const DarwinInitializationSettings initializationSettingsIOS =
       DarwinInitializationSettings(
         requestAlertPermission: false,
@@ -29,7 +30,8 @@ Future<void> initializeNotifications() async {
   // 플러그인 초기화 (initialize)
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
-    onDidReceiveNotificationResponse: (NotificationResponse response) { //로컬노티 클릭시
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      //로컬노티 클릭시
       try {
         //payload를 Map으로 역직렬화
         final Map<String, dynamic> data = jsonDecode(response.payload!);
@@ -40,7 +42,6 @@ Future<void> initializeNotifications() async {
         );
 
         webViewKey.currentState?.handleFCMMessage(syntheticMessage);
-
       } catch (e) {
         debugPrint('Payload JSON 파싱 오류: $e');
       }
@@ -76,8 +77,11 @@ Future<void> initializeNotifications() async {
   }
 }
 
-
-Future<void> showSimpleNotification(String title, [String? contents, RemoteMessage? message]) async {
+Future<void> showSimpleNotification(
+  String title, [
+  String? contents,
+  RemoteMessage? message,
+]) async {
   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
     'default_channel_id', // 채널 ID
     '기본 알림', // 채널 이름

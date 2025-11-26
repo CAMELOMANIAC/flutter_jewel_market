@@ -38,10 +38,9 @@ Future<void> main() async {
 
   // 포어그라운드 메시지 리스너 설정
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    // GlobalKey를 사용해 _ExternalWebViewState의 메서드를 호출합니다.
     String currentTalkKey = "";
     dynamic pushData;
-    if (message.data.containsKey("pushData")){
+    if (message.data.containsKey("pushData")) {
       pushData = jsonDecode(message.data["pushData"]);
     }
     debugPrint('포어그라운드 메시지 받음: ${message.data}');
@@ -49,13 +48,18 @@ Future<void> main() async {
       currentTalkKey = pushData["TALK_KEY"] ?? pushData["talkKey"] ?? "";
     }
 
-    debugPrint('포그라운드 메시지 처리중: {$currentTalkKey - ${webViewKey.currentState
-        ?.activatedTalkKey}}');
+    debugPrint(
+      '포그라운드 메시지 처리중: {$currentTalkKey - ${webViewKey.currentState?.activatedTalkKey}}',
+    );
 
     if (webViewKey.currentState?.activatedTalkKey != currentTalkKey) {
       //활성된 토크키랑 메세지가 같으면 웹뷰에 메세지를 날리지 말것
-      if (message.data.containsKey("title")){
-        showSimpleNotification(message.data["title"], message.data["body"] ?? '', message);
+      if (message.data.containsKey("title")) {
+        showSimpleNotification(
+          message.data["title"],
+          message.data["body"] ?? '',
+          message,
+        );
       }
       debugPrint('포어그라운드 메시지 처리: ${message.data}');
     }

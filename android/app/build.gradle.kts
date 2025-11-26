@@ -44,6 +44,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.core:core-splashscreen:1.0.1")//안드로이드 12이상에서 스플래시 이미지 설정을 하기위해서
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }
 
