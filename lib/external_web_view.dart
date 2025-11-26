@@ -206,7 +206,7 @@ class ExternalWebViewState extends State<ExternalWebView>
     // 카메라 또는 마이크 권한 요청이 들어오면 무조건 거부 추후에 업로드 기능 사진이나 파일을 찾아야하므로 변경 필요
     // if (request.resources.contains(PermissionResourceType.CAMERA) ||
     //     request.resources.contains(PermissionResourceType.MICROPHONE)) {
-    
+
     if (request.resources.contains(PermissionResourceType.MICROPHONE)) {
       return PermissionResponse(
         resources: request.resources,
@@ -232,10 +232,10 @@ class ExternalWebViewState extends State<ExternalWebView>
             onWebViewCreated: (controller) {
               webViewController = controller;
               fcmTokenEventHandler();
-              webReadyHandShakeHandler();
             },
             onLoadStop: (controller, url) {
               //웹뷰가 완전히 로드된 후 실행할 이벤트
+              webReadyHandShakeHandler();
               flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
               activatedTalkKeyHandler();
             },
