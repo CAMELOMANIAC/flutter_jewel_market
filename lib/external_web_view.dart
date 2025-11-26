@@ -204,8 +204,10 @@ class ExternalWebViewState extends State<ExternalWebView>
     PermissionRequest request,
   ) async {
     // 카메라 또는 마이크 권한 요청이 들어오면 무조건 거부 추후에 업로드 기능 사진이나 파일을 찾아야하므로 변경 필요
-    if (request.resources.contains(PermissionResourceType.CAMERA) ||
-        request.resources.contains(PermissionResourceType.MICROPHONE)) {
+    // if (request.resources.contains(PermissionResourceType.CAMERA) ||
+    //     request.resources.contains(PermissionResourceType.MICROPHONE)) {
+    
+    if (request.resources.contains(PermissionResourceType.MICROPHONE)) {
       return PermissionResponse(
         resources: request.resources,
         action: PermissionResponseAction.DENY, // 권한 거부
