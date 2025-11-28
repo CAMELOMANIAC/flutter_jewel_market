@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ExternalWebView extends StatefulWidget {
   final RemoteMessage? initialFCMMessage;
@@ -203,56 +204,54 @@ class ExternalWebViewState extends State<ExternalWebView>
     InAppWebViewController controller,
     PermissionRequest request,
   ) async {
-    // 카메라 또는 마이크 권한 요청이 들어오면 무조건 거부 추후에 업로드 기능 사진이나 파일을 찾아야하므로 변경 필요
-    // if (request.resources.contains(PermissionResourceType.CAMERA) ||
-    //     request.resources.contains(PermissionResourceType.MICROPHONE)) {
-
-    if (request.resources.contains(PermissionResourceType.MICROPHONE)) {
-      return PermissionResponse(
-        resources: request.resources,
-        action: PermissionResponseAction.DENY, // 권한 거부
-      );
+    if (request.resources.contains(PermissionResourceType.CAMERA)) {
+      // 1. permission_handler를 이용해 네이티브 권한을 요청합니다.
+      PermissionStatus status = await Permission.camera.request();
+      
+      // 2. 네이티브 권한 요청 결과에 따라 웹뷰에 결과를 전달합니다.
+      if (status.isGranted) {
+        return PermissionResponse(
+          resources: request.resources,
+          action: PermissionResponseAction.GRANT,
+        );
+      } else {
+        return PermissionResponse(
+          resources: request.resources,
+          action: PermissionResponseAction.DENY,
+        );
+      }
     }
+    // 다른 권한 요청은 기본 처리
     return PermissionResponse(
       resources: request.resources,
-      action: PermissionResponseAction.GRANT, // 다른 권한은 허용 (필요에 따라 변경)
+      action: PermissionResponseAction.DENY,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        PopScope(
-          canPop: false, //기본 history.back()을 하지 못하도록 합니다.
-          onPopInvokedWithResult: //원래 플러터는 코르도바와 달리 자동으로 history.back()을 호출하지만
-              _onPopInvokedWithResult, //기존 코드 호환을 위해 backbutton 이벤트를 트리거하도록 정의
-          child: InAppWebView(
-            initialUrlRequest: URLRequest(url: WebUri(uri)),
-            onWebViewCreated: (controller) {
-              webViewController = controller;
-              fcmTokenEventHandler();
-              webReadyHandShakeHandler();
-            },
-            onLoadStop: (controller, url) {
-              //웹뷰가 완전히 로드된 후 실행할 이벤트
-              flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
-              activatedTalkKeyHandler();
-            },
-            onPermissionRequest: _requestPermissionHandler,
-            initialSettings: InAppWebViewSettings(
-              isInspectable: kDebugMode ? true : false,
-            ), //ios용 웹인스펙터 디버깅 설정 추가
-          ),
+    return 
+      PopScope(
+        canPop: false, //기본 history.back()을 하지 못하도록 합니다.
+        onPopInvokedWithResult: //원래 플러터는 코르도바와 달리 자동으로 history.back()을 호출하지만
+            _onPopInvokedWithResult, //기존 코드 호환을 위해 backbutton 이벤트를 트리거하도록 정의
+        child: InAppWebView(
+          initialUrlRequest: URLRequest(url: WebUri(uri)),
+          onWebViewCreated: (controller) {
+            webViewController = controller;
+            fcmTokenEventHandler();
+            webReadyHandShakeHandler();
+          },
+          onLoadStop: (controller, url) {
+            //웹뷰가 완전히 로드된 후 실행할 이벤트
+            flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
+            activatedTalkKeyHandler();
+          },
+          onPermissionRequest: _requestPermissionHandler,
+          initialSettings: InAppWebViewSettings(
+            isInspectable: kDebugMode ? true : false,
+          ), //ios용 웹인스펙터 디버깅 설정 추가
         ),
-        isWebReady ==
-                false // 웹뷰가 준비되지 않을때 보여 줄 폴백 출력
-            ? Container(
-                color: Colors.white,
-                child: Center(child: CircularProgressIndicator()),
-              )
-            : const SizedBox.shrink(),
-      ],
-    );
+      );
   }
 }

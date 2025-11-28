@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-	<string>사진 촬영을 위해 카메라 접근 권한이 필요합니다.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>사진을 업로드하기 위해 사진첩 접근 권한이 필요합니다.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -35,6 +31,12 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>프로필 사진 촬영이 필요할경우 사용됩니다</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>사진을 앨범에 저장하기 위해 쓰기 권한이 필요합니다.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>사진을 업로드하기 위해 사진첩 접근 권한이 필요합니다.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
