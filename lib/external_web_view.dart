@@ -141,7 +141,6 @@ class ExternalWebViewState extends State<ExternalWebView>
       // 자사 페이지에서는 코르도바의 backbutton 이벤트를 재현합니다.
       webViewController?.evaluateJavascript(
         source: '''
-          console.log("backbutton",theApp.mainNavi.curHisIndex)
           window.dispatchEvent(new Event("backbutton"));
         ''',
       );
@@ -207,7 +206,7 @@ class ExternalWebViewState extends State<ExternalWebView>
     if (request.resources.contains(PermissionResourceType.CAMERA)) {
       // 1. permission_handler를 이용해 네이티브 권한을 요청합니다.
       PermissionStatus status = await Permission.camera.request();
-      
+
       // 2. 네이티브 권한 요청 결과에 따라 웹뷰에 결과를 전달합니다.
       if (status.isGranted) {
         return PermissionResponse(
@@ -230,28 +229,27 @@ class ExternalWebViewState extends State<ExternalWebView>
 
   @override
   Widget build(BuildContext context) {
-    return 
-      PopScope(
-        canPop: false, //기본 history.back()을 하지 못하도록 합니다.
-        onPopInvokedWithResult: //원래 플러터는 코르도바와 달리 자동으로 history.back()을 호출하지만
-            _onPopInvokedWithResult, //기존 코드 호환을 위해 backbutton 이벤트를 트리거하도록 정의
-        child: InAppWebView(
-          initialUrlRequest: URLRequest(url: WebUri(uri)),
-          onWebViewCreated: (controller) {
-            webViewController = controller;
-            fcmTokenEventHandler();
-            webReadyHandShakeHandler();
-          },
-          onLoadStop: (controller, url) {
-            //웹뷰가 완전히 로드된 후 실행할 이벤트
-            flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
-            activatedTalkKeyHandler();
-          },
-          onPermissionRequest: _requestPermissionHandler,
-          initialSettings: InAppWebViewSettings(
-            isInspectable: kDebugMode ? true : false,
-          ), //ios용 웹인스펙터 디버깅 설정 추가
-        ),
-      );
+    return PopScope(
+      canPop: false, //기본 history.back()을 하지 못하도록 합니다.
+      onPopInvokedWithResult: //원래 플러터는 코르도바와 달리 자동으로 history.back()을 호출하지만
+          _onPopInvokedWithResult, //기존 코드 호환을 위해 backbutton 이벤트를 트리거하도록 정의
+      child: InAppWebView(
+        initialUrlRequest: URLRequest(url: WebUri(uri)),
+        onWebViewCreated: (controller) {
+          webViewController = controller;
+          fcmTokenEventHandler();
+          webReadyHandShakeHandler();
+        },
+        onLoadStop: (controller, url) {
+          //웹뷰가 완전히 로드된 후 실행할 이벤트
+          flutterCloseEventHandler(); //웹뷰가 종료 신호를 보내는 경우 종료하는 함수
+          activatedTalkKeyHandler();
+        },
+        onPermissionRequest: _requestPermissionHandler,
+        initialSettings: InAppWebViewSettings(
+          isInspectable: kDebugMode ? true : false,
+        ), //ios용 웹인스펙터 디버깅 설정 추가
+      ),
+    );
   }
 }

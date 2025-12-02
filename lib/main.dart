@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_jewel_market/external_web_view.dart';
+import 'package:flutter_jewel_market/firebase_options.dart';
 import 'package:flutter_jewel_market/local_notification.dart';
 
 final webViewKey = GlobalKey<ExternalWebViewState>(); //하위 위젯에 접근하기 위해 위젯 참조저장
@@ -11,7 +12,9 @@ final webViewKey = GlobalKey<ExternalWebViewState>(); //하위 위젯에 접근�
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); //비동기 main과 네이티브가 동기화하기 위한 초기화
 
-  await Firebase.initializeApp(); //firebase sdk 초기화
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ); //firebase sdk 초기화
 
   // 파이어베이스 알림 권한 요청
   NotificationSettings settings = await FirebaseMessaging.instance
@@ -72,7 +75,7 @@ Future<void> main() async {
   // 앱이 완전히 종료된 상태에서 알림을 눌러 시작했을 때 처리(값을 받아서 웹뷰 위젯까지 넘김)
   RemoteMessage? initialMessage = await FirebaseMessaging.instance
       .getInitialMessage();
-      
+
   runApp(MyApp(initialMessage: initialMessage));
 
   await initializeNotifications(); //로컬알림 권한요청 및 초기화
